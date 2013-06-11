@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>rivets.js example</title>
+
+    <script src="../dist/rivets.js" type="text/javascript"></script>
+    <script src="../dist/rivets.extend.js" type="text/javascript"></script>
+    <script src="scope.js" ></script>
+
+</head>
+<body>
+<div id="test">
+</div>
+<div id="book">
+        <b data-rv-text="title"></b>
+        <p class='info' data-rv-show='available && available'>Now Available</p>
+        <p>Cost: <span data-rv-text='cost'></span></p>
+        <p>Author: <span data-rv-text='info.author'></span></p>
+        <p>Year: <span data-rv-text='info.year'></span></p>
+        <p>Publisher name: <span data-rv-text='info.publisher.name'></span></p>
+        <!--<p>Publish date <span data-rv-text="published_at | smartdate"></span></p>-->
+        <h5>Sections</h5>
+    <p data-rv-each-section="sections">
+        <span data-rv-text="section"></span>
+        <span data-rv-text="$index"></span>
+        <span data-rv-text="$index%2"></span>
+        <span data-rv-show="$even">Even</span>
+        <span data-rv-show="$odd">Odd</span>
+        <button data-rv-on-click="setCost($index)">Set Cost to <span data-rv-text="$index"></span></button>
+    </p>
+        <button data-rv-on-click="setCost(Math.random())">Set Cost to <span data-rv-text=""></span></button>
+<!---->
+
+
+        <input data-value="cost" />
+
+        <img data-rv-src="http://local.chess-samara.ru/i/{{img}}" title="QWE" />
+
+
+        <input type="button" value="refresh" data-rv-on-click="$refresh()" />
+        <input type="button" value="apply test" data-rv-on-click="test()" />
+</div>
+<script>
+
+
+
+
+
+    var book = new Scope({title:'Awesome Book Title',available:true,cost:'$5.15'});
+
+    book.$watch("cost", function(nv, ov) {
+        if (nv != ov) {
+            alert('cost changed');
+        }
+    });
+
+
+    book.img = "logo-regular.png";
+
+    book.info = {
+        author: "Ivan",
+        year: 1977,
+        pages: 836,
+        publisher: {
+            name: 'Super Press'
+        }
+    };
+
+    book.published_at = '2013-05-13 12:00:00';
+
+    book.sections = ["first", "second", "third"];
+    //    book.sections = [{name:"first"}, {name:"second"}, {name:"third"}];
+
+
+    book.setCost =function(newCost) {
+//        debugger;
+        console.log('setCost', newCost);
+        book.$apply(function() {
+          book.cost = newCost;
+        });
+    };
+
+
+    book.test = function() {
+        book.$apply(function() {
+            book.cost = "123123123";
+        });
+    };
+
+    rivets.formatters.plain = function(value) {
+        console.log(value);
+        return value;
+    };
+
+    var bindings = rivets.bind(document.getElementById('book'), book)
+    //    bindings.config.adapter.models = bindings.models;
+    //    bindings.sync();
+    console.log(bindings);
+
+
+</script>
+</body>
+</html>
